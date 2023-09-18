@@ -19,64 +19,75 @@ Unit unitEnum(const char* unitStr) {
 }
 
 double convert(char input[30]) {
-    double amount;
+    double originalAmount;
     char unit1str[3], unit2str[3];
     Unit unit1, unit2;
     double output;
 
-    sscanf(input, "%lf %2s %2s", &amount, unit1str, unit2str);    
-
+    sscanf(input, "%lf %2s %2s", &originalAmount, unit1str, unit2str);    
+    
+    double tempAmount = originalAmount;
     unit1 = unitEnum(unit1str);
     unit2 = unitEnum(unit2str);
+    Unit ogUnit1 = unit1;
 
     if (unit1 == ER) {
+        printf("Allowable units: g kg t oz lb tn");
         return -10.0;
     }
     if (unit2 == ER) {
+        printf("Allowable units: g kg t oz lb tn");
         return -10.0;
     }
 
 
     if (unit1 == G) {
-        amount = amount / 1000.0;
+        tempAmount = tempAmount / 1000.0;
         unit1 = KG;
     }
     if (unit1 == T) {
-        amount = amount * 1000.0;
+        tempAmount = tempAmount * 1000.0;
         unit1 = KG;
     }
     if (unit1 == OZ) {
-        amount = amount / 16.0;
+        tempAmount = tempAmount / 16.0;
         unit1 = LB;
     }
     if (unit1 == TN) {
-        amount = amount * 2000.0;
+        tempAmount = tempAmount * 2000.0;
         unit1 = LB;
     }
 
     if (unit1 == LB) {
 
-        output = amount * LB_TO_KG;
+        output = tempAmount * LB_TO_KG;
         
         if (unit2 == G) {
             return output * 1000.0;
         }
-        if (unit2 == T) {
+        else if (unit2 == T) {
             return output / 1000.0;
         }
-        return output;
+        else {
+            return output;
+        }
 
     } else {
         
-        output = amount / LB_TO_KG;
+        output = tempAmount / LB_TO_KG;
 
         if (unit2 == OZ) {
+            printf("%.4f kg = %.4f lb", originalAmount, output);                        
             return output * 16.0;
         }
-        if (unit2 == TN) {
+        else if (unit2 == TN) {
+            printf("%.4f kg = %.4f lb", originalAmount, output);                        
             return output / 2000.0;
         }
-        return output;
+        else {
+            printf("%.4f kg = %.4f lb", originalAmount, output);            
+            return output;
+        }
     }  
 }
 
@@ -84,17 +95,17 @@ int main() {
     
     char inputString[30];
 
-    printf("Allowable units: g kg t oz lb tn\n");
+    printf("Allowable units: g kg t oz lb tn");
 
-    do {
-        printf("> ");  
+    while (strcmp(inputString, "q\n")) {
+
+        printf("\n> ");  
         fgets(inputString, sizeof(inputString), stdin);
 
         double conversion;
         conversion = convert(inputString);
-        printf("Conversion: %.2f", conversion);
-
-    } while(strcmp(inputString, "q\n") != 0);
-    
+    }     
     return 0;
 }
+
+
