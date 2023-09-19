@@ -8,86 +8,120 @@ typedef enum {
     G,KG,T,OZ,LB,TN,ER
 } Unit;
 
-Unit unitEnum(const char* unitStr) {
-    if (strcmp(unitStr, "g") == 0) return G;
-    if (strcmp(unitStr, "kg") == 0) return KG;
-    if (strcmp(unitStr, "t") == 0) return T;
-    if (strcmp(unitStr, "oz") == 0) return OZ;
-    if (strcmp(unitStr, "lb") == 0) return LB;
-    if (strcmp(unitStr, "tn") == 0) return TN;
+Unit unitEnum(const char* unit_str) {
+    if (strcmp(unit_str, "g") == 0) return G;
+    if (strcmp(unit_str, "kg") == 0) return KG;
+    if (strcmp(unit_str, "t") == 0) return T;
+    if (strcmp(unit_str, "oz") == 0) return OZ;
+    if (strcmp(unit_str, "lb") == 0) return LB;
+    if (strcmp(unit_str, "tn") == 0) return TN;
     return ER;
 }
 
 double convert(char input[30]) {
-    double originalAmount;
-    char unit1str[3], unit2str[3];
-    Unit unit1, unit2;
+
+    // Initializing variables and reading user input - breaking into amount and units
+
+    double original_amount;
+    char source_unit_str[3], target_unit_str[3];
+    Unit source_unit, target_unit;
     double output;
 
-    sscanf(input, "%lf %2s %2s", &originalAmount, unit1str, unit2str);    
+    sscanf(input, "%lf %2s %2s", &original_amount, source_unit_str, target_unit_str);    
     
-    double tempAmount = originalAmount;
-    unit1 = unitEnum(unit1str);
-    unit2 = unitEnum(unit2str);
-    Unit ogUnit1 = unit1;
+    double temp_amount = original_amount;
+    source_unit = unitEnum(source_unit_str);
+    target_unit = unitEnum(target_unit_str);
+    Unit original_source_unit = source_unit;
 
-    if (unit1 == ER) {
+    ////////////////////////////////////////
+   
+    // Catching error enums (anything that isnt a unit is set to ER)
+
+    if (source_unit == ER) {
         printf("Allowable units: g kg t oz lb tn");
         return -10.0;
     }
-    if (unit2 == ER) {
+    if (target_unit == ER) {
         printf("Allowable units: g kg t oz lb tn");
         return -10.0;
     }
 
+    ////////////////////////////////////////
 
-    if (unit1 == G) {
-        tempAmount = tempAmount / 1000.0;
-        unit1 = KG;
+    // converting source unit into starting unit (KG or LB)
+
+    if (source_unit == G) {
+        temp_amount = temp_amount / 1000.0;
+        source_unit = KG;
     }
-    if (unit1 == T) {
-        tempAmount = tempAmount * 1000.0;
-        unit1 = KG;
+    if (source_unit == T) {
+        temp_amount = temp_amount * 1000.0;
+        source_unit = KG;
     }
-    if (unit1 == OZ) {
-        tempAmount = tempAmount / 16.0;
-        unit1 = LB;
+    if (source_unit == OZ) {
+        temp_amount = temp_amount / 16.0;
+        source_unit = LB;
     }
-    if (unit1 == TN) {
-        tempAmount = tempAmount * 2000.0;
-        unit1 = LB;
+    if (source_unit == TN) {
+        temp_amount = temp_amount * 2000.0;
+        source_unit = LB;
     }
 
-    if (unit1 == LB) {
+    ////////////////////////////////////////
+    
+    // Converting into final unit 
 
-        output = tempAmount * LB_TO_KG;
-        
-        if (unit2 == G) {
-            return output * 1000.0;
-        }
-        else if (unit2 == T) {
-            return output / 1000.0;
-        }
-        else {
-            return output;
-        }
+    if (source_unit == LB) {
 
-    } else {
-        
-        output = tempAmount / LB_TO_KG;
-
-        if (unit2 == OZ) {
-            printf("%.4f kg = %.4f lb", originalAmount, output);                        
+        if (target_unit == OZ) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                           
             return output * 16.0;
         }
-        else if (unit2 == TN) {
-            printf("%.4f kg = %.4f lb", originalAmount, output);                        
+        else if (target_unit == TN) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);
+            return output/ 2000.0;
+        }
+
+        output = temp_amount * LB_TO_KG;
+        
+        if (target_unit == G) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);
+            return output * 1000.0;
+        }
+        else if (target_unit == T) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);
+            return output / 1000.0;
+        }
+        
+        printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);
+        return output;
+
+    } else {
+
+        if (target_unit == G) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                           
+            return output * 1000.0;
+        }
+
+        if (target_unit == G) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                           
+            return output / 1000.0;
+        }
+        
+        output = temp_amount / LB_TO_KG;
+
+        if (target_unit == OZ) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                        
+            return output * 16.0;
+        }
+        else if (target_unit == TN) {
+            printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                        
             return output / 2000.0;
         }
-        else {
-            printf("%.4f kg = %.4f lb", originalAmount, output);            
-            return output;
-        }
+
+        printf("%.4f %s = %.4f %s", original_amount, source_unit_str, output, target_unit_str);                        
+        return output;
     }  
 }
 
