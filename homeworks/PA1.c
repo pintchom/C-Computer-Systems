@@ -3,47 +3,65 @@
 #include <stdlib.h>
 
 double LB_TO_KG = 0.45359237;
+int MAX_UNIT_STRING_LENGTH = 256;
 
-typedef enum {
-    G,KG,T,OZ,LB,TN,ER
-} Unit;
+enum UNIT {
+    G,
+    KG,
+    T,
+    OZ,
+    LB,
+    TN,
+    UNSOPPURTED
+};
 
-Unit unitEnum(const char* unit_str) {
-    if (strcmp(unit_str, "g") == 0) return G;
-    if (strcmp(unit_str, "kg") == 0) return KG;
-    if (strcmp(unit_str, "t") == 0) return T;
-    if (strcmp(unit_str, "oz") == 0) return OZ;
-    if (strcmp(unit_str, "lb") == 0) return LB;
-    if (strcmp(unit_str, "tn") == 0) return TN;
-    return ER;
+typedef enum UNIT Unit;
+
+Unit unit_string_to_unit(const char* unit_str) {
+
+   for (int i = 0; i < sizeof(unit_strings) / sizeof(unit_strings[0]); i++) {
+
+        if (strcmp(unit_str, unit_strings[i]) == 0) {
+            return (Unit)i;          
+        }
+
+    }
+    return UNSUPPORTED;
 }
 
-double convert(char input[30]) {
+const char * const unit_strings[] = {
+    "g",
+    "kg",
+    "t",
+    "oz",
+    "lb",
+    "tn"
+};
+
+const double factors[] {
+    0.001, // G -> KG
+    1.0, // KG -> KG
+    1000.0, // T -> KG
+    1.0/16.0, // OZ -> LB
+    1.0, // LB -> LB
+    2000.0 // TN -> LB
+}
+
+double convert(double initial_amount, const char* input_unit, const char* output_unit) {
 
     // Initializing variables and reading user input - breaking into amount and units
 
-    double original_amount;
-    char source_unit_str[3], target_unit_str[3];
-    Unit source_unit, target_unit;
-    double output;
-
-    sscanf(input, "%lf %2s %2s", &original_amount, source_unit_str, target_unit_str);    
-    
-    double temp_amount = original_amount;
-    source_unit = unitEnum(source_unit_str);
-    target_unit = unitEnum(target_unit_str);
-    Unit original_source_unit = source_unit;
+    Unit input_unit = unit_string_to_unit(input_unit);
+    Unit output_unit = unit_string_to_unit(output_unit);
 
     ////////////////////////////////////////
    
     // Catching error enums (anything that isnt a unit is set to ER)
 
-    if (source_unit == ER) {
-        printf("Allowable units: g kg t oz lb tn");
+    if (input_unit == UNSUPPORTED) {
         return -10.0;
     }
-    if (target_unit == ER) {
-        printf("Allowable units: g kg t oz lb tn");
+    if (output_unit == UNSUPPORTED) {
         return -10.0;
     }
 
@@ -127,19 +145,19 @@ double convert(char input[30]) {
 
 int main() {
     
-    char inputString[30];
+    double initial_amount;
+    char input_unit[MAX_UNIT_STRING_LENGTH];
+    char ouput_unit[MAX_UNIT_STRING_LENGTH];
 
     printf("Allowable units: g kg t oz lb tn");
 
-    while (strcmp(inputString, "q\n")) {
+    while (scanf("%lf %s %s", &initial_amount, source_unit, target_unit)) {
+        
+        printf("\n>");        
+        double conversion = convert(initial_amount, source_unit, target_unit)
 
-        printf("\n> ");  
-        fgets(inputString, sizeof(inputString), stdin);
-
-        double conversion;
-        conversion = convert(inputString);
     }     
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
