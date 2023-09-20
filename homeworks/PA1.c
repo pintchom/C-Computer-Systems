@@ -8,9 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Constant conversion and length
 const double LB_TO_KG = 0.45359237;
 const int MAX_UNIT_STRING_LENGTH = 256;
 
+//enumerating UNIT in this order to reference later 
 enum UNIT {
     G,
     KG,
@@ -20,10 +22,10 @@ enum UNIT {
     TN,
     UNSUPPORTED
 };
-
+//creating type Unit for conversions
 typedef enum UNIT Unit;
 
-
+//const unit strings to have a function to determine if a unit is of a certain type 
 const char * const unit_strings[] = {
     "g",
     "kg",
@@ -33,6 +35,7 @@ const char * const unit_strings[] = {
     "tn"
 };
 
+//const factors for conversion (same order as enum UNIT)
 const double factors[] = {
     0.001, // G -> KG
     1.0,   // KG -> KG
@@ -42,6 +45,7 @@ const double factors[] = {
     2000.0 // TN -> LB
 };
 
+//iterates through unit_strings to find a match
 Unit unit_string_to_unit(const char* unit_str) {
 
    for (int i = 0; i < sizeof(unit_strings) / sizeof(unit_strings[0]); i++) {
@@ -54,14 +58,16 @@ Unit unit_string_to_unit(const char* unit_str) {
     return UNSUPPORTED;
 }
 
+//simple function to check if metric or not metric 
 int is_metric(Unit unit) {
 
     return unit == G || unit == KG || unit == T; 
 
 }
 
+//print function for repeated use
 void print_allowable_units() {
-    printf("Allowable units: g kg t oz lb tn\n>)");    
+    printf("Allowable units: g kg t oz lb tn\n> ");    
 }
 
 double convert(double initial_amount, const char* input_unit_str, const char* output_unit_str) {
@@ -164,6 +170,8 @@ double convert(double initial_amount, const char* input_unit_str, const char* ou
                 input_unit = LB;
                 break;
         }
+
+        //converting LB to metric or non metric
 
         if (is_metric(output_unit) == 0) {
             
