@@ -13,15 +13,8 @@ const double LB_TO_KG = 0.45359237;
 const int MAX_UNIT_STRING_LENGTH = 256;
 
 //enumerating UNIT in this order to reference later 
-enum UNIT {
-    G,
-    KG,
-    T,
-    OZ,
-    LB,
-    TN,
-    UNSUPPORTED
-};
+enum UNIT { G, KG, T, OZ, LB, TN, UNSUPPORTED };
+
 //creating type Unit for conversions
 typedef enum UNIT Unit;
 
@@ -34,6 +27,9 @@ const char * const unit_strings[] = {
     "lb",
     "tn"
 };
+
+//Defining size for iteration 
+const int num_unit_strings = sizeof(unit_strings) / sizeof(unit_strings[0]);
 
 //const factors for conversion (same order as enum UNIT)
 const double factors[] = {
@@ -48,7 +44,7 @@ const double factors[] = {
 //iterates through unit_strings to find a match
 Unit unit_string_to_unit(const char* unit_str) {
 
-   for (int i = 0; i < sizeof(unit_strings) / sizeof(unit_strings[0]); i++) {
+   for (int i = 0; i < num_unit_strings; i++) {
 
         if (strcmp(unit_str, unit_strings[i]) == 0) {
             return (Unit)i;          
@@ -67,7 +63,7 @@ int is_metric(Unit unit) {
 
 //print function for repeated use
 void print_allowable_units() {
-    printf("Allowable units: g kg t oz lb tn\n> ");    
+    printf("Allowable units: g kg t oz lb tn\n");    
 }
 
 double convert(double initial_amount, const char* input_unit_str, const char* output_unit_str) {
@@ -219,8 +215,10 @@ int main() {
     char input_unit[MAX_UNIT_STRING_LENGTH];
     char output_unit[MAX_UNIT_STRING_LENGTH];
 
-    printf("Please enter a mass quantity to convert, in the form <number> <input-unit> <output-unit>.\nEnter any letter to quit.");
+    printf("Please enter a mass quantity to convert, in the form <number> <input-unit> <output-unit>.\n");
+    printf("Enter any letter to quit.\n");
     print_allowable_units();
+    printf("> ");
 
     while (scanf("%lf %s %s", &initial_amount, input_unit, output_unit)) {
         
@@ -230,8 +228,9 @@ int main() {
             print_allowable_units();
         }
         else {
-            printf("%2f %s = %2f %s\n>", initial_amount, input_unit, conversion, output_unit);
+            printf("%2f %s = %2f %s\n", initial_amount, input_unit, conversion, output_unit);
         }
+        printf("> ");
 
     }     
     return EXIT_SUCCESS;
