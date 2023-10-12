@@ -38,35 +38,57 @@ void print_normalized(Converter converter) {
 
     int true_exponent = exponent - BIAS;
 
-    FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS); // FIGURE OUT WHAT THIS DOES
+    FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS);
 
-    FP_TYPE reconstituted = pow(-1, sign) * (1 + mantissa_decimal) * power_of_2(true_exponent); // GET RID OF POW SIGN USE 
-
-    printf("Original value:\n");
-    printf("(-1)^{" UFP_TYPE_FORMAT "} x (1 + %f) x 2^{%d}\n", sign, mantissa_decimal, true_exponent);
-    printf("  = %f x %f\n", 1 + mantissa_decimal, power_of_2(true_exponent));
-    printf("  = %.45f\n", reconstituted);
-
+    FP_TYPE reconstituted = pow(-1, sign) * (1 + mantissa_decimal) * power_of_2(true_exponent); 
+    
+    if (sign < 1) {  
+        printf("Original value:\n");
+        printf("(-1)^{0} x (1 + %f) x 2^{" UFP_TYPE_FORMAT " - %d}\n", mantissa_decimal, exponent, BIAS);
+        printf("  = 1 x %f x 2^{%d}\n", 1 + mantissa_decimal, true_exponent);
+        printf("  = %f x %.0f\n", 1 + mantissa_decimal, power_of_2(true_exponent));
+        printf("  = %.45f\n", reconstituted);
+    } else {
+        printf("Original value:\n");
+        printf("(-1)^{1} x (1 + %f) x 2^{" UFP_TYPE_FORMAT " - %d}\n", mantissa_decimal, exponent, BIAS);
+        printf("  = -1 x %f x 2^{%d}\n", 1 + mantissa_decimal, true_exponent);
+        printf("  = -1 x %f x %.0f\n", 1 + mantissa_decimal, power_of_2(true_exponent));
+        printf("  = %.45f\n", reconstituted);
+    }
 }
 
 void print_denormalized(Converter converter) {
     
-    UNSIGNED_INT_TYPE sign = converter.components.sign;
     UNSIGNED_INT_TYPE mantissa = converter.components.mantissa;
+    UNSIGNED_INT_TYPE sign = converter.components.sign;
 
     int true_exponent = 1 - BIAS;
-
     
     FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS);
    
-    FP_TYPE reconstituted = pow(-1, sign) * mantissa_decimal * power_of_2(true_exponent);
-
-    printf("Original value:\n"); // MAKE SURE ALL OF THESE MATCH EXACTLY THE EXAMPLES AND THAT THEY LOGICALLY MAKE SENSE 
-    printf("(-1)^{" UFP_TYPE_FORMAT "} x (1 + " FP_TYPE_FORMAT ") x 2^{%d - %d}\n", sign, mantissa, converter.components.exponent, BIAS);
-    printf("  = " UFP_TYPE_FORMAT " x 2^{" FP_TYPE_FORMAT "}\n", sign, mantissa_decimal, true_exponent);
-    printf("  = " FP_TYPE_FORMAT " x " FP_TYPE_FORMAT "\n", mantissa_decimal, power_of_2(true_exponent));
-    printf("  = " FP_TYPE_FORMAT "\n", reconstituted);
-
+    FP_TYPE reconstituted = 1 * mantissa_decimal * power_of_2(true_exponent);
+    
+    if (sign < 1) {
+        if (mantissa == 0) {
+            printf("Original value: 0.0\n");
+            return;
+        }
+        printf("Original value:\n");
+        printf("(-1)^{0} x " FP_TYPE_FORMAT " x 2^{1 - %d}\n", mantissa_decimal, BIAS);
+        printf("  = 1 x " FP_TYPE_FORMAT " x 2^{%d}\n", mantissa_decimal, true_exponent);
+        printf("  = " FP_TYPE_FORMAT " x 1/%.0f\n", mantissa_decimal, power_of_2(true_exponent * -1));
+        printf("  = %.45f\n", reconstituted); 
+    } else {
+        if (mantissa == 0) {
+            printf("Original value: -0.0\n");
+            return;
+        }
+        printf("Original value:\n");
+        printf("(-1)^{1} x " FP_TYPE_FORMAT " x 2^{1 - %d}\n", mantissa_decimal, BIAS);
+        printf("  = -1 x " FP_TYPE_FORMAT " x 2^{%d}\n", mantissa_decimal, true_exponent);
+        printf("  = -1 x " FP_TYPE_FORMAT " x 1/%.0f\n", mantissa_decimal, power_of_2(true_exponent * -1));
+        printf("  = -%.45f\n", reconstituted);
+    }
 }
 
 void print_reconstitution(Converter converter) {
@@ -84,18 +106,14 @@ FP_TYPE power_of_2(int exponent) {
     FP_TYPE result = 1.0;
 
     if (exponent >= 0) {
-        //printf(FP_TYPE_FORMAT "\n", result);
         for (int i = 0; i < exponent; i++) {
             result *= 2.0;
-            //printf(FP_TYPE_FORMAT "\n", result);
         } 
     }
 
     else {
-        //printf(FP_TYPE_FORMAT "\n", result);
         for (int i = 0; i > exponent; i--) {
             result /= 2.0;
-            //printf(FP_TYPE_FORMAT "\n", result);
         }
     }
 
