@@ -13,23 +13,20 @@ int main(int argc, char *argv[]) {
        
         Converter converter;        
         FP_TYPE user_input;
+
         printf("Please enter a floating-point number or q to quit.\n");
         printf("> ");
      
         while (scanf(FP_TYPE_FORMAT, &user_input)) {
             
-            printf(FP_TYPE_FORMAT "\n", user_input); 
+            printf(FP_TYPE_FORMAT "\n", user_input); // Initial numerical print
 
-            converter.float_rep = user_input;
+            converter.float_rep = user_input; // storing input in union
 
-            print_components(converter);
-
-            if (converter.float_rep == 0) {
-                printf("Original Value: " FP_TYPE_FORMAT, converter.float_rep); 
-            } else {
-                
-            }
+            print_components(converter); // printing binary components from struct
             
+            print_reconstitution(converter);  
+
             printf("> ");
         } 
     }
