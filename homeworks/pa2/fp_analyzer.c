@@ -5,7 +5,6 @@
 void print_bits(UNSIGNED_INT_TYPE value, int num_bits) {
 
     for (int i = num_bits - 1; i >= 0; i--) {
-
         if (value & (1 << i)) {
             printf("1");
         } else {
@@ -26,6 +25,24 @@ void print_components(Converter converter) {
     printf("\nMantissa: ");
     print_bits(converter.components.mantissa, MANTISSA_BITS);
     printf("\n");
+}
+
+print_normalized(Converter converter) {
+
+    if (converter.float_rep == 0.0) {
+        printf("Original Value: " FP_TYPE_FORMAT, converter.float_rep);
+    } else {
+        
+    }
+
+}
+
+void print_denormalized(Converter converter) {
+    printf("> \n");
+}
+
+void print_reconstitution(Converter converter) {
+    printf("> \n");
 }
 
 FP_TYPE power_of_2(int exponent) {

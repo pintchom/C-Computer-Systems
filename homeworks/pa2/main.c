@@ -19,8 +19,16 @@ int main(int argc, char *argv[]) {
         while (scanf(FP_TYPE_FORMAT, &user_input)) {
             
             printf(FP_TYPE_FORMAT "\n", user_input); 
+
             converter.float_rep = user_input;
-            print_components(converter); 
+
+            print_components(converter);
+
+            if (converter.float_rep == 0) {
+                printf("Original Value: " FP_TYPE_FORMAT, converter.float_rep); 
+            } else {
+                
+            }
             
             printf("> ");
         } 
