@@ -2,34 +2,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h> 
 
 int main(int argc, char *argv[]) {
 
+    Converter converter;        
+
     if (argc > 1 && strcmp(argv[1], "special") == 0) {
-        return EXIT_SUCCESS;
-    } 
-    else {
-       
-        Converter converter;        
-        FP_TYPE user_input;
+
+        FP_TYPE specials[] = {1.0/0.0, -1.0/0.0, 0.0/0.0, -(0.0/0.0)}; // inf, -inf, nan, -nan
+
+        for (int i = 0; i < 4; i++) {
+            printf("\n%f\n", specials[i]);
+            converter.float_rep = specials[i];
+            print_components(converter);
+        } 
+
+        printf("\n");
+
+    } else {
+
+        FP_TYPE user_input;        
 
         printf("Please enter a floating-point number or q to quit.\n");
-        printf("> ");
      
-        while (scanf(FP_TYPE_FORMAT, &user_input)) {
-            
-            printf(FP_TYPE_FORMAT "\n", user_input); // Initial numerical print
+        while (printf("> "), scanf(FP_TYPE_FORMAT, &user_input)) {
 
             converter.float_rep = user_input; // storing input in union
-
-            print_components(converter); // printing binary components from struct
             
-            print_reconstitution(converter);  
-
-            printf("> ");
+            printf("%f\n", user_input); // Initial numerical print
+            print_components(converter); // printing binary components from struct
+            print_reconstitution(converter);  // printing original value with steps                                              
         } 
     }
-
     return EXIT_SUCCESS;    
 }

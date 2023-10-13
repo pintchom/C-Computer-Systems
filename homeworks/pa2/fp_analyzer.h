@@ -22,7 +22,7 @@
 typedef struct {
     UNSIGNED_INT_TYPE mantissa : MANTISSA_BITS;
     UNSIGNED_INT_TYPE exponent : EXPONENT_BITS;
-    UNSIGNED_INT_TYPE sign : 1;
+    UNSIGNED_INT_TYPE sign: 1;
 } Components;
 
 typedef union Converter {

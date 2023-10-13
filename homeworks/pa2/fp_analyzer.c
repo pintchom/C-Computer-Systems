@@ -5,7 +5,7 @@
 void print_bits(UNSIGNED_INT_TYPE value, int num_bits) {
 
     for (int i = num_bits - 1; i >= 0; i--) {
-        if (value & (1 << i)) {
+        if (value & (1ULL << i)) {
             printf("1");
         } else {
             printf("0");
@@ -74,9 +74,9 @@ void print_denormalized(Converter converter) {
             return;
         }
         printf("Original value:\n");
-        printf("(-1)^{0} x " FP_TYPE_FORMAT " x 2^{1 - %d}\n", mantissa_decimal, BIAS);
-        printf("  = 1 x " FP_TYPE_FORMAT " x 2^{%d}\n", mantissa_decimal, true_exponent);
-        printf("  = " FP_TYPE_FORMAT " x 1/%.0f\n", mantissa_decimal, power_of_2(true_exponent * -1));
+        printf("(-1)^{0} x %.45f x 2^{1 - %d}\n", mantissa_decimal, BIAS);
+        printf("  = 1 x %f x 2^{%d}\n", mantissa_decimal, true_exponent);
+        printf("  = %.45f x 1/%.0f\n", mantissa_decimal, power_of_2(true_exponent * -1));
         printf("  = %.45f\n", reconstituted); 
     } else {
         if (mantissa == 0) {
