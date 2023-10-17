@@ -1,17 +1,16 @@
 #include "fp_analyzer.h"
-#include <math.h> 
 #include <stdio.h>
 
 void print_bits(UNSIGNED_INT_TYPE value, int num_bits) {
 
     for (int i = num_bits - 1; i >= 0; i--) {
+
         if (value & (1ULL << i)) {
             printf("1");
         } else {
             printf("0");
         }
     }
-
 }
 
 void print_components(Converter converter) {
@@ -38,17 +37,22 @@ void print_normalized(Converter converter) {
 
     int true_exponent = exponent - BIAS;
 
-    FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS);
-
-    FP_TYPE reconstituted = pow(-1, sign) * (1 + mantissa_decimal) * power_of_2(true_exponent); 
+    FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS); 
     
     if (sign < 1) {  
+
+        FP_TYPE reconstituted = 1 * (1 + mantissa_decimal) * power_of_2(true_exponent); 
+        
         printf("Original value:\n");
         printf("(-1)^{0} x (1 + %f) x 2^{" UFP_TYPE_FORMAT " - %d}\n", mantissa_decimal, exponent, BIAS);
         printf("  = 1 x %f x 2^{%d}\n", 1 + mantissa_decimal, true_exponent);
         printf("  = %f x %.0f\n", 1 + mantissa_decimal, power_of_2(true_exponent));
         printf("  = %.45f\n", reconstituted);
+
     } else {
+
+        FP_TYPE reconstituted = -1 * (1 + mantissa_decimal) * power_of_2(true_exponent);         
+
         printf("Original value:\n");
         printf("(-1)^{1} x (1 + %f) x 2^{" UFP_TYPE_FORMAT " - %d}\n", mantissa_decimal, exponent, BIAS);
         printf("  = -1 x %f x 2^{%d}\n", 1 + mantissa_decimal, true_exponent);
@@ -67,22 +71,28 @@ void print_denormalized(Converter converter) {
     FP_TYPE mantissa_decimal = mantissa / (FP_TYPE)(1ULL << MANTISSA_BITS);
    
     FP_TYPE reconstituted = 1 * mantissa_decimal * power_of_2(true_exponent);
+    // power always 0 in the first operator of this formula 
     
     if (sign < 1) {
+
         if (mantissa == 0) {
             printf("Original value: 0.0\n");
             return;
         }
+
         printf("Original value:\n");
         printf("(-1)^{0} x %.45f x 2^{1 - %d}\n", mantissa_decimal, BIAS);
         printf("  = 1 x %f x 2^{%d}\n", mantissa_decimal, true_exponent);
         printf("  = %.45f x 1/%.0f\n", mantissa_decimal, power_of_2(true_exponent * -1));
         printf("  = %.45f\n", reconstituted); 
+
     } else {
+
         if (mantissa == 0) {
             printf("Original value: -0.0\n");
             return;
         }
+
         printf("Original value:\n");
         printf("(-1)^{1} x " FP_TYPE_FORMAT " x 2^{1 - %d}\n", mantissa_decimal, BIAS);
         printf("  = -1 x " FP_TYPE_FORMAT " x 2^{%d}\n", mantissa_decimal, true_exponent);
@@ -98,7 +108,6 @@ void print_reconstitution(Converter converter) {
     } else {
         print_normalized(converter);
     }
-
 }
 
 FP_TYPE power_of_2(int exponent) {
@@ -109,14 +118,11 @@ FP_TYPE power_of_2(int exponent) {
         for (int i = 0; i < exponent; i++) {
             result *= 2.0;
         } 
-    }
-
-    else {
+    } else {
         for (int i = 0; i > exponent; i--) {
             result /= 2.0;
         }
     }
-
     return result;
 }
 

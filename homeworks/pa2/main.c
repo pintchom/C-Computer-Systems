@@ -10,14 +10,13 @@ int main(int argc, char *argv[]) {
     if (argc > 1 && strcmp(argv[1], "special") == 0) {
 
         FP_TYPE specials[] = {1.0/0.0, -1.0/0.0, 0.0/0.0, -(0.0/0.0)}; // inf, -inf, nan, -nan
-
+        
         for (int i = 0; i < 4; i++) {
-            printf("\n%f\n", specials[i]);
+            printf("%f\n", specials[i]);
             converter.float_rep = specials[i];
             print_components(converter);
+            printf("\n");
         } 
-
-        printf("\n");
 
     } else {
 
@@ -31,7 +30,7 @@ int main(int argc, char *argv[]) {
             
             printf("%f\n", user_input); // Initial numerical print
             print_components(converter); // printing binary components from struct
-            print_reconstitution(converter);  // printing original value with steps                                              
+            print_reconstitution(converter);  // printing original value with steps                 
         } 
     }
     return EXIT_SUCCESS;    
