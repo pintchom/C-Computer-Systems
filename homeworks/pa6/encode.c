@@ -5,7 +5,7 @@
 
 int getSetBits(unsigned char ch, int *bits) {
     int count = 0;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < MAX_BITS; ++i) {
         if (ch & (1 << i)) {
             bits[count++] = i;
         }
@@ -18,14 +18,12 @@ int encode(unsigned char input, int *indices) {
     int count = getSetBits(input, bits);
 
     for (int i = 0; i < count; ++i) {
-        int rotated = (bits[i] + count) % 8;
-        indices[i] = 8 - rotated;
-        if (indices[i] == 8) {
-            indices[i] = 0;
-        }
+        int rotated = (bits[i] + count) % MAX_BITS;
+        indices[i] = (9 - rotated) % MAX_BITS;
     }
     return count;
 }
+
 void read_and_encode_file(char *in_file, char *out_file) {
     FILE *fin, *fout;
     int ch;  
@@ -46,7 +44,7 @@ void read_and_encode_file(char *in_file, char *out_file) {
     }
 
     while ((ch = fgetc(fin)) != EOF) {
-        count = encode((unsigned char)ch, indices);
+        count = encode((unsigned char) ch, indices);
 
         fprintf(fout, "%d", count);
         for (i = 0; i < count; i++) {
