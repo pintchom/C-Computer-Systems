@@ -14,17 +14,18 @@ int getSetBits(unsigned char ch, int *bits) {
 }
 
 int encode(unsigned char input, int *indices) {
-    int bits[8];
+    int bits[MAX_BITS];
     int count = getSetBits(input, bits);
 
     for (int i = 0; i < count; ++i) {
         int rotated = (bits[i] + count) % 8;
-        indices[i] = 9 - rotated;
+        indices[i] = 8 - rotated;
+        if (indices[i] == 8) {
+            indices[i] = 0;
+        }
     }
-
     return count;
 }
-
 void read_and_encode_file(char *in_file, char *out_file) {
     FILE *fin, *fout;
     int ch;  

@@ -18,11 +18,31 @@ void read_and_decode_file(const char *file_name) {
     }
 
     int count;
-    while (fscanf(file, "%d", &count) == 1) {
+    while (1) {
+        if (fscanf(file, "%1d", &count) != 1) {
+            if (feof(file)) {
+                break;
+            }
+            fprintf(stderr, "Error reading count from encoded data.\n");
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
+
+        if (count < 0 || count > 7) {
+            fprintf(stderr, "Invalid count value: %d\n", count);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
+
         int bits[count];
         for (int i = 0; i < count; i++) {
-            if (fscanf(file, "%d", &bits[i]) != 1) {
-                fprintf(stderr, "Error reading encoded data.\n");
+            if (fscanf(file, "%1d", &bits[i]) != 1) {
+                fprintf(stderr, "Error reading bit index from encoded data.\n");
+                fclose(file);
+                exit(EXIT_FAILURE);
+            }
+            if (bits[i] < 0 || bits[i] > 7) {
+                fprintf(stderr, "Invalid bit index: %d\n", bits[i]);
                 fclose(file);
                 exit(EXIT_FAILURE);
             }
@@ -37,7 +57,7 @@ void read_and_decode_file(const char *file_name) {
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <encoded_file>\n", argv[0]);
+        printf("Please enter an input file name as a command-line argument.");        
         return EXIT_FAILURE;
     }
 
