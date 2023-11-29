@@ -4,11 +4,9 @@
 #include <string.h>
 
 int mem_init() {
-
-    // Initializing page of memory
     void *page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-    if (page == MAP_FAILED) { // Error checking 
+    if (page == MAP_FAILED) { 
         return FAILURE;
     }
 
@@ -84,8 +82,91 @@ void *mem_alloc(size_t requested_size) {
 
 }
 
-//void mem_free(void *ptr) {
-    
-//}
+void mem_free(void *ptr) {
+    if (!ptr) {
+        return; 
+    }
 
+    Header *header = get_header(ptr);
+    set_free(header); 
+
+    if (header->next && is_free(header->next) && same_page(header, header->next)) {
+        header->size += header->next->size + sizeof(Header);
+        header->next = header->next->next;
+        if (header->next) {
+            header->next->previous = header;
+        }
+    }
+
+    if (header->previous && is_free(header->previous) && same_page(header, header->previous)) {
+        header->previous->size += header->size + sizeof(Header);
+        header->previous->next = header->next;
+        if (header->next) {
+            header->next->previous = header->previous;
+        }
+        header = header->previous; 
+    }
+
+    if (header->size == PAGE_SIZE - sizeof(Header)) {
+
+        if (header->previous) {
+            header->previous->next = header->next;
+        } else {
+            free_list = header->next;  
+        }
+
+        if (header->next) {
+            header->next->previous = header->previous;
+        }
+    }
+}
+
+int is_free(Header *header) {
+    return !(header->size & 1);
+}
+
+int same_page(Header *h1, Header *h2) {
+    return ((uintptr_t)h1 & ~(PAGE_SIZE - 1)) == ((uintptr_t)h2 & ~(PAGE_SIZE - 1));
+}
+int is_allocated(Header *header) {
+    return header->size & 1; 
+}
+
+void set_allocated(Header *header) {
+    header->size |= 1; 
+}
+
+void set_free(Header *header) {
+    header->size &= ~1;
+}
+
+Header *get_header(void *mem) {
+    return (Header *)((char *)mem - sizeof(Header));
+}
+
+void print_list() {
+    Header *current = free_list;
+    while (current != NULL) {
+        printf("Header at %p: size = %zu, allocated = %d, next = %p, prev = %p\n",
+            (void *)current, 
+            current->size & ~1, 
+            is_allocated(current), 
+            (void *)current->next, 
+            (void *)current->previous);
+        current = current->next;
+    }
+}
+
+void print_header(Header *header) {
+    if (header != NULL) {
+        printf("Header at %p: size = %zu, allocated = %d, next = %p, prev = %p\n",
+           (void *)header, 
+           header->size & ~1, 
+           is_allocated(header), 
+           (void *)header->next,
+           (void *)header->previous);
+    } else {
+        printf("Header is NULL\n");
+    }
+}
 
