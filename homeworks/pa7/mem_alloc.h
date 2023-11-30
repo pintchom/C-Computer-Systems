@@ -8,22 +8,16 @@
 #define FAILURE -1      
 
 typedef struct Header {
-    size_t size;               
     struct Header *next;      
-    struct Header *previous;  
+    struct Header *previous;
+    size_t size;                   
 } Header;
 
-static Header *free_list = NULL;
+static Header * free_list = NULL;
 
-void *mem_alloc(size_t requested_size);
-void mem_free(void *ptr);
-int is_allocated(Header *header);
-void set_allocated(Header *header);
-void set_free(Header *header);
-Header *get_header(void *mem);
-int is_free(Header *header);
-int same_page(Header *h1, Header *h2);
-void print_list();
-void print_header(Header *header);
+int mem_init();
+int mem_extend(Header * last);
+void * mem_alloc(size_t requested_size);
+void mem_free(void * ptr);
 
 #endif 

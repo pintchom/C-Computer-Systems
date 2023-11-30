@@ -2,10 +2,34 @@
 #include <sys/mman.h> 
 #include <unistd.h>    
 #include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+
+int is_free(Header * header) {
+    return !(header->size & 1);
+}
+
+int same_page(Header *h1, Header *h2) {
+    return ((uintptr_t)h1 & ~(PAGE_SIZE - 1)) == ((uintptr_t)h2 & ~(PAGE_SIZE - 1));
+}
+int is_allocated(Header *header) {
+    return header->size & 1; 
+}
+
+void set_allocated(Header *header) {
+    header->size |= 1; 
+}
+
+void set_free(Header *header) {
+    header->size &= ~1;
+}
+
+Header * get_header(void * mem) {
+    return (Header *)((char *)mem - sizeof(Header));
+}
 
 int mem_init() {
-    void *page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-
+    void * page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (page == MAP_FAILED) { 
         return FAILURE;
     }
@@ -17,7 +41,7 @@ int mem_init() {
     return SUCCESS;
 }
 
-int mem_extend(Header *last) {
+int mem_extend(Header * last) {
     void *page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (page == MAP_FAILED) {
         return FAILURE;
@@ -119,29 +143,6 @@ void mem_free(void *ptr) {
             header->next->previous = header->previous;
         }
     }
-}
-
-int is_free(Header *header) {
-    return !(header->size & 1);
-}
-
-int same_page(Header *h1, Header *h2) {
-    return ((uintptr_t)h1 & ~(PAGE_SIZE - 1)) == ((uintptr_t)h2 & ~(PAGE_SIZE - 1));
-}
-int is_allocated(Header *header) {
-    return header->size & 1; 
-}
-
-void set_allocated(Header *header) {
-    header->size |= 1; 
-}
-
-void set_free(Header *header) {
-    header->size &= ~1;
-}
-
-Header *get_header(void *mem) {
-    return (Header *)((char *)mem - sizeof(Header));
 }
 
 void print_list() {
