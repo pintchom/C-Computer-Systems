@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "matrix_mult.h"  // Replace with your actual header file name
+#include "matrix_mult.h"
 
-void print_matrix(double *matrix, int dim); // Ensure this is declared in your header file
+void print_matrix(double *matrix, int dim);
 
 int main() {
-    // Define the dimension of the matrices and number of workers
-    int dim = 4;  // Use a small matrix for testing
-    int num_workers = 4;
+    int dim = DIM;
+    int num_workers = NUM_WORKERS;
 
     // Allocate memory for matrices
     double *matrix_a = calloc(dim * dim, sizeof(double));
@@ -25,28 +24,28 @@ int main() {
     init_matrix(matrix_b, dim);
 
     // Print SERIAL INPUT
-    printf("SERIAL INPUT:\n");
-    print_matrix(matrix_a, dim);
-    print_matrix(matrix_b, dim);
+    //printf("SERIAL INPUT:\n");
+    //print_matrix(matrix_a, dim);
+    //print_matrix(matrix_b, dim);
 
     // Perform serial matrix multiplication
     multiply_serial(matrix_a, matrix_b, matrix_c_serial, dim);
 
     // Print SERIAL OUTPUT
-    printf("SERIAL OUTPUT:\n");
-    print_matrix(matrix_c_serial, dim);
+    //printf("SERIAL OUTPUT:\n");
+    //print_matrix(matrix_c_serial, dim);
 
     // Print PARALLEL INPUT
-    printf("PARALLEL INPUT:\n");
-    print_matrix(matrix_a, dim);
-    print_matrix(matrix_b, dim);
+    //printf("PARALLEL INPUT:\n");
+    //print_matrix(matrix_a, dim);
+    //print_matrix(matrix_b, dim);
 
     // Perform parallel matrix multiplication
     multiply_parallel_processes(matrix_a, matrix_b, matrix_c_parallel, dim, num_workers);
 
     // Print PARALLEL OUTPUT
-    printf("PARALLEL OUTPUT:\n");
-    print_matrix(matrix_c_parallel, dim);
+    //printf("PARALLEL OUTPUT:\n");
+    //print_matrix(matrix_c_parallel, dim);
 
     // Compare the results
     for (int i = 0; i < dim * dim; i++) {
