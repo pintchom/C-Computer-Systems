@@ -28,16 +28,7 @@ void multiply_serial(const double * const a, const double * const b, double * co
     }
 }
 
-void print_matrix(double * matrix, int dim) {
-    for (int i = 0; i < dim; i++) {
-        for (int j = 0; j < dim; j++) {
-            printf("%.2f ", matrix[i * dim + j]);
-        }
-        printf("\n");
-    }
-}
-
-void* mmap_checked(size_t size) {
+void * mmap_checked(size_t size) {
     void * ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (ptr == MAP_FAILED) {
         perror("mmap");
@@ -153,13 +144,10 @@ void multiply_parallel_threads(const double * const a, const double * const b, d
         arg_set[i].chunk_size = (i == num_workers - 1) ? dim - row_start : chunk_size;
         row_start += chunk_size;
     }
-
     for (int id = 0; id < num_threads; ++id) {
         pthread_create(&threads[id], NULL, task, (void *)&arg_set[id]);
     }
-
     task((void *)&arg_set[num_workers - 1]);
-
     for (int id = 0; id < num_threads; ++id) {
         pthread_join(threads[id], NULL);
     }
@@ -177,7 +165,6 @@ void run_and_time(
         const int num_workers,
         const bool verify
         ) {
-
     struct timeval start, end;
     gettimeofday(&start, NULL);
     multiply_matrices(a, b, c, dim, num_workers);
